@@ -189,6 +189,64 @@ Before working with `samtools` I will try to learn more about it using the `--he
 
 ```shell
 
+Program: samtools (Tools for alignments in the SAM format)
+Version: 1.21 (using htslib 1.21)
+
+Usage:   samtools <command> [options]
+
+Commands:
+  -- Indexing
+     dict           create a sequence dictionary file
+     faidx          index/extract FASTA
+     fqidx          index/extract FASTQ
+     index          index alignment
+
+  -- Editing
+     calmd          recalculate MD/NM tags and '=' bases
+     fixmate        fix mate information
+     reheader       replace BAM header
+     targetcut      cut fosmid regions (for fosmid pool only)
+     addreplacerg   adds or replaces RG tags
+     markdup        mark duplicates
+     ampliconclip   clip oligos from the end of reads
+
+  -- File operations
+     collate        shuffle and group alignments by name
+     cat            concatenate BAMs
+     consensus      produce a consensus Pileup/FASTA/FASTQ
+     merge          merge sorted alignments
+     mpileup        multi-way pileup
+     sort           sort alignment file
+     split          splits a file by read group
+     quickcheck     quickly check if SAM/BAM/CRAM file appears intact
+     fastq          converts a BAM to a FASTQ
+     fasta          converts a BAM to a FASTA
+     import         Converts FASTA or FASTQ files to SAM/BAM/CRAM
+     reference      Generates a reference from aligned data
+     reset          Reverts aligner changes in reads
+
+  -- Statistics
+     bedcov         read depth per BED region
+     coverage       alignment depth and percent coverage
+     depth          compute the depth
+     flagstat       simple stats
+     idxstats       BAM index stats
+     cram-size      list CRAM Content-ID and Data-Series sizes
+     phase          phase heterozygotes
+     stats          generate stats (former bamcheck)
+     ampliconstats  generate amplicon specific stats
+
+  -- Viewing
+     flags          explain BAM flags
+     head           header viewer
+     tview          text alignment viewer
+     view           SAM<->BAM<->CRAM conversion
+     depad          convert padded BAM to unpadded BAM
+     samples        list the samples in a set of SAM/BAM/CRAM files
+
+  -- Misc
+     help [cmd]     display this help message or help for [cmd]
+     version        detailed version information
 ```
 
 Then, we can make a sorted BAM file:
@@ -196,19 +254,48 @@ Then, we can make a sorted BAM file:
 ```shell
 samtools view -bS ERR3638927.sam | samtools sort -o ERR3638927_sorted.bam
 ```
+Command breakdown using help info:
+
+`view`: used to convert between BAM, SAM, and CRAM files
+
+`-bS`: According to the help command for `view`, the `b` indicates the ouput file will be a BAM file, and the `S` portion is ignored becasuse the input format is autodetected.
+
+Then, the sam file is inputed and piped into the following commands
+
+`sort`: used to sort alignment files. After looking further into the command, it sorts the alignment file by the leftmost coordinate when used in default settings. https://www.htslib.org/doc/samtools-sort.html
+
+`-o`: writes to an output file rather than standard format
+
+The file is then named what is specified after the `-o` option.
+
 Index it:
 ```shell
 samtools index ERR3638927_sorted.bam
 ```
-Make it a FASTA file:
+
+Command breakdown:
+
+`index`: :creates an index of the alignment for fast random access
+
+Make it a FASTA file
+
 ```shell
 samtools fasta ERR3638927_sorted.bam > ERR3638927.fasta
 head ERR3638927.fasta
 ```
+Command breakdown:
+
+`fasta`: converts the BAM/SAM file to a fasta type file
+
 And index it:
 ```shell
 samtools faidx ERR3638927.fasta
 ```
+
+Command Breakdown:
+
+`faidx`: creates an index of a fasta type file
+
 ## Finally, let's check the VCF file
 ```shell
 head -100 Run1CB3334.vcf | less
