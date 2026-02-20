@@ -158,6 +158,7 @@ Why the difference?
 
 ### Let's download some data from NCBI
 ```
+cd /fs/scratch/PAS3260/mia/Lab_4
 module load sratoolkit/3.0.2
 ```
 # What is sratoolkit?
@@ -179,10 +180,12 @@ zcat ERR3638927_1.fastq.gz | head
 ```
 ## Let's download a SAM file
 ```shell
+cd data
 sam-dump --output-file ERR3638927.sam ERR3638927
 ```
 To manipulate the SAM file we will need samtools:
 ```shell
+cd ..
 module load samtools/1.21
 ```
 Before working with `samtools` I will try to learn more about it using the `--help` option
@@ -252,7 +255,7 @@ Commands:
 Then, we can make a sorted BAM file:
 
 ```shell
-samtools view -bS ERR3638927.sam | samtools sort -o ERR3638927_sorted.bam
+samtools view -bS data/ERR3638927.sam | samtools sort -o data/ERR3638927_sorted.bam
 ```
 Command breakdown using help info:
 
@@ -270,7 +273,7 @@ The file is then named what is specified after the `-o` option.
 
 Index it:
 ```shell
-samtools index ERR3638927_sorted.bam
+samtools index data/ERR3638927_sorted.bam
 ```
 
 Command breakdown:
@@ -280,8 +283,8 @@ Command breakdown:
 Make it a FASTA file
 
 ```shell
-samtools fasta ERR3638927_sorted.bam > ERR3638927.fasta
-head ERR3638927.fasta
+samtools fasta data/ERR3638927_sorted.bam > data/ERR3638927.fasta
+head data/ERR3638927.fasta
 ```
 Command breakdown:
 
@@ -289,7 +292,7 @@ Command breakdown:
 
 And index it:
 ```shell
-samtools faidx ERR3638927.fasta
+samtools faidx data/ERR3638927.fasta
 ```
 
 Command Breakdown:
@@ -301,13 +304,7 @@ Command Breakdown:
 Before working with `vcftools` I want to learn more about the command using the `man vcftools`
 
 ```shell
-
-
-```
-
-
-```shell
-head -100 Run1CB3334.vcf | less
+head -100 data/Run1CB3334.vcf | less
 module load vcftools/0.1.16
 vcftools --vcf Run1CB3334.vcf
 ```
@@ -316,7 +313,7 @@ Command breakdown: Based on the output, it appears it completed some type of fil
 `--vcf`: processes the vcf file (look more into this later?)
 
 ```shell
-vcftools --vcf Run1CB3334.vcf --maf 0.05
+vcftools --vcf data/Run1CB3334.vcf --maf 0.05
 ```
 
 Command breakdown:  I got the same warnings in the output, but this time the filtering kept all the Individual but only 5 out of 40 Sites
@@ -324,28 +321,35 @@ Command breakdown:  I got the same warnings in the output, but this time the fil
 `maf 0.05`: includes only sites with minor allele frequency greater than or equal to 0.05
 
 ```shell
-vcftools --vcf Run1CB3334.vcf --maf 0.05 --recode --out Run1CB3334_Filtered_maf05
+vcftools --vcf data/Run1CB3334.vcf --maf 0.05 --recode --out results/Run1CB3334_Filtered_maf05
+mv Run1CB3334_Filtered_maf05.log results/
 ```
 Command breakdown: I got the exact same output to my terminal as the previous command, but there are now two additional files in my directory.
 
 `--recode`: creates a new vcf file based on the input and filtering options specified
 
 `--out`: defines the output files' basename
-```shell
-vcftools --vcf Run1CB3334_Filtered_maf05.recode.vcf
-```
 
 The output files include a filtered vcf file only containing sites with a minor allele frequenct greater than or equal to 0.05, and a log file that contains the information that was printed to the screen.
 
+```shell
+vcftools --vcf results/Run1CB3334_Filtered_maf05.recode.vcf
+```
+The output of this command resulted in all the Individuals and Sites remaining in the file after filtering the specfied file in default settings.
+
 ## Can we check the VCF file using a container as in Lab 3?
+
 ```shell
 module unload vcftools/0.1.16
 vcftools --help
 apptainer pull vcftools.sif docker://quay.io/biocontainers/vcftools:0.1.16--pl5321hdcf5f25_9
 apptainer exec vcftools.sif vcftools --help
-apptainer exec vcftools.sif vcftools --vcf Run1CB3334.vcf --maf 0.05 --recode --out Run1CB3334_Filtered_maf05_from_container
-apptainer exec vcftools.sif vcftools --vcf Run1CB3334_Filtered_maf05_from_container.recode.vcf
+apptainer exec vcftools.sif vcftools --vcf data/Run1CB3334.vcf --maf 0.05 --recode --out results/Run1CB3334_Filtered_maf05_from_container
+apptainer exec vcftools.sif vcftools --vcf results/Run1CB3334_Filtered_maf05_from_container.recode.vcf
+mv Run1CB3334_Filtered_maf05_from_container.log results/
 ```
+I got the exact same results as when I used the built in `vcftools` module.
+
 ## How could we use a container of samtools?
 ```shell
 module unload samtools/1.10
