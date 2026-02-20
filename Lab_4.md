@@ -158,13 +158,24 @@ Why the difference?
 
 ### Let's download some data from NCBI
 ```
-module load sratoolkit/2.10.7
+module load sratoolkit/3.0.2
+```
 # What is sratoolkit?
+
+It is a module that can be loaded into the Pitzer cluster of OSC that is capable of storing raw sequence data and moving it to your files.
+https://www.osc.edu/resources/available_software/software_list/sra_toolkit
+
+```shell
 fastq-dump --gzip --split-files --readids --origfmt ERR3638927
 ```
 (a faster option is fasterq-dump, how can you look for information about this command?)
+
+The website I linked above provides information for each command within the `sratoolkit`. Within this link, there is a link to the github for this tool which provides even more information. When I don't know how to use a tool and the name of the tool and `--help` does not work, I can google information about the tool.
+
+https://github.com/ncbi/sra-tools/wiki
+
 ```shell
-zcat ERR3638927.fastq.gz | head
+zcat ERR3638927_1.fastq.gz | head
 ```
 ## Let's download a SAM file
 ```shell
@@ -172,9 +183,16 @@ sam-dump --output-file ERR3638927.sam ERR3638927
 ```
 To manipulate the SAM file we will need samtools:
 ```shell
-module load samtools/1.10
+module load samtools/1.21
 ```
+Before working with `samtools` I will try to learn more about it using the `--help` option
+
+```shell
+
+```
+
 Then, we can make a sorted BAM file:
+
 ```shell
 samtools view -bS ERR3638927.sam | samtools sort -o ERR3638927_sorted.bam
 ```
