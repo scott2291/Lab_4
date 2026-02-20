@@ -122,24 +122,40 @@ head Run1CB3334.fastq.gz
 head Run1CB3334.bam
 ```
 ### Do you see something weird?
+
+The gzipped fastq file is machine readable instead of human readable, so the output is not legible.
+
 ## For `Run1CB3334.fastq.gz` try:
 ```shell
 zcat Run1CB3334.fastq.gz | head
 ```
+This command made the output readable, and similar to the fastq file format I have previously seen.
 
 ## Let's check the fastq file in a little more detail
 ```shell
 head -100 Run1CB3334.fastq | less
 ```
+I see a lot of capital letters in the quality score line of each read, which indicates the reads are not of high quality.
 
 ### How would you count the number of reads in the fastq file?
+
 ```shell
 wc -l Run1CB3334.fastq
 ```
+
+The output to this command was `7560972 Run1CB3334.fastq` which indicated to me that there are approximately 7.5 million reads within this fastq file and ~30 million lines within the file.
+
 # Is it? Try:
+```shell
 zcat Run1CB3334.fastq.gz | echo "$((`wc -l` / 4))"
 ```
+The output to this command was `1890243` which indicates to me that there are ~8 million lines within this file.
+
 Why the difference?
+
+>I think there is a difference between the number of lines within these files due to the nature of compressing files. When looking at the sizes of these files, the compressed file is signifincantly smaller. Therefore, the number of lines in the machine readable, compressed version of the fastq file may not hold much meaning compared to the unzipped human-readable version.
+
+
 ### Let's download some data from NCBI
 ```
 module load sratoolkit/2.10.7
