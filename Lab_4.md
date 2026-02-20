@@ -297,14 +297,46 @@ Command Breakdown:
 `faidx`: creates an index of a fasta type file
 
 ## Finally, let's check the VCF file
+
+Before working with `vcftools` I want to learn more about the command using the `man vcftools`
+
+```shell
+
+
+```
+
+
 ```shell
 head -100 Run1CB3334.vcf | less
 module load vcftools/0.1.16
 vcftools --vcf Run1CB3334.vcf
+```
+Command breakdown: Based on the output, it appears it completed some type of filtering on the vcf file, but the file we inputed did not have any data that was filtered out on the Individual or Site level. There was also several warnings that came up stating that there was not enough parts specified in the INFO or FORMAT entry for each variant
+
+`--vcf`: processes the vcf file (look more into this later?)
+
+```shell
 vcftools --vcf Run1CB3334.vcf --maf 0.05
+```
+
+Command breakdown:  I got the same warnings in the output, but this time the filtering kept all the Individual but only 5 out of 40 Sites
+
+`maf 0.05`: includes only sites with minor allele frequency greater than or equal to 0.05
+
+```shell
 vcftools --vcf Run1CB3334.vcf --maf 0.05 --recode --out Run1CB3334_Filtered_maf05
+```
+Command breakdown: I got the exact same output to my terminal as the previous command, but there are now two additional files in my directory.
+
+`--recode`: creates a new vcf file based on the input and filtering options specified
+
+`--out`: defines the output files' basename
+```shell
 vcftools --vcf Run1CB3334_Filtered_maf05.recode.vcf
 ```
+
+The output files include a filtered vcf file only containing sites with a minor allele frequenct greater than or equal to 0.05, and a log file that contains the information that was printed to the screen.
+
 ## Can we check the VCF file using a container as in Lab 3?
 ```shell
 module unload vcftools/0.1.16
