@@ -1,7 +1,0 @@
-ref_Run1CB3334.fasta: OK
-Rice.gff3: OK
-Run1CB3334.bam: OK
-Run1CB3334.fastq: OK
-Run1CB3334.fastq.gz: OK
-Run1CB3334.sam: OK
-Run1CB3334.vcf: OK
