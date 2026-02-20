@@ -2,7 +2,7 @@
 ## Check where you are and make sure you create your working directory in the right place
 
 ```shell
-cd /fs/scratch/PAS3260/User/
+cd /fs/scratch/PAS3260/mia/
 mkdir Lab_4
 ```
 
@@ -255,7 +255,7 @@ Commands:
 Then, we can make a sorted BAM file:
 
 ```shell
-samtools view -bS data/ERR3638927.sam | samtools sort -o data/ERR3638927_sorted.bam
+samtools view -bS data/ERR3638927.sam | samtools sort -o results/ERR3638927_sorted.bam
 ```
 Command breakdown using help info:
 
@@ -273,7 +273,7 @@ The file is then named what is specified after the `-o` option.
 
 Index it:
 ```shell
-samtools index data/ERR3638927_sorted.bam
+samtools index results/ERR3638927_sorted.bam
 ```
 
 Command breakdown:
@@ -283,8 +283,8 @@ Command breakdown:
 Make it a FASTA file
 
 ```shell
-samtools fasta data/ERR3638927_sorted.bam > data/ERR3638927.fasta
-head data/ERR3638927.fasta
+samtools fasta results/ERR3638927_sorted.bam > results/ERR3638927.fasta
+head results/ERR3638927.fasta
 ```
 Command breakdown:
 
@@ -292,7 +292,7 @@ Command breakdown:
 
 And index it:
 ```shell
-samtools faidx data/ERR3638927.fasta
+samtools faidx results/ERR3638927.fasta
 ```
 
 Command Breakdown:
@@ -352,9 +352,21 @@ I got the exact same results as when I used the built in `vcftools` module.
 
 ## How could we use a container of samtools?
 ```shell
-module unload samtools/1.10
+module unload samtools/1.21
 samtools --help
-apptainer pull samtools.sif docker://
+apptainer pull samtools.sif docker://community.wave.seqera.io/library/samtools:1.21--0d76da7c3cf7751c
 apptainer exec samtools.sif samtools --help
 ```
-Followign the same structure as VCFtools, define the commands to sort and index fasta and BAM files using the samtools container
+Following the same structure as VCFtools, define the commands to sort and index fasta and BAM files using the samtools container
+
+```shell
+apptainer exec samtools.sif samtools view -bS data/ERR3638927.sam | apptainer exec samtools.sif samtools sort -o results/ERR3638927_sorted_from_container.bam
+apptainer exec samtools.sif samtools index results/ERR3638927_sorted_from_container.bam
+apptainer exec samtools.sif samtools fasta results/ERR3638927_sorted_from_container.bam > results/ERR3638927_from_container.fasta
+head results/ERR3638927_from_container.fasta
+apptainer exec samtools.sif samtools faidx results/ERR3638927_from_container.fasta
+```
+
+This worked exactly the same as the built in module except it requires more typing to call the container rather than state the commands in the loaded module.
+
+note: I removed the `out.log` files produced by the file commands in the `vcftools` workflow because it wasn't specified, so it was writing over eachother. I assumed it was uneeded since we chose not to specify an output file.
